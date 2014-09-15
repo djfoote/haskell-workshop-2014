@@ -23,12 +23,7 @@ The Interpreter
 ===============
 GHCi is the Haskell interpreter that comes packaged with the Platform. Open it up in your terminal by typing `ghci`. You should see something like this:
 
-    Daviss-MacBook-Pro:~ davisfoote$ ghci
-    GHCi, version 7.6.3: http://www.haskell.org/ghc/  :? for help
-    Loading package ghc-prim ... linking ... done.
-    Loading package integer-gmp ... linking ... done.
-    Loading package base ... linking ... done.
-    Prelude> 
+![GHCI](images/ghci.png?raw=true)
   
 By default, the prompt depends on whatever packages you have loaded. `Prelude` is the package of everything that is imported automatically in GHC. If you're working with a bunch of stuff, the prompt can get kind of unwieldy, so you can change it for the duration of your interactive session using `:set prompt "λ> "` (you can replace that string with whatever you want, but I think the lambda's pretty cute so that's what I'm gonna use). If you want to make that change permanent, add the same line to your `ghci.conf` file as outlined here: https://www.haskell.org/ghc/docs/7.2.2/html/users_guide/ghci-dot-files.html.
 
