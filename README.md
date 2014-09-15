@@ -65,7 +65,7 @@ Characters in Haskell are denoted with single quotes. Lists of characters get sp
     λ> 'c':"ello"
     "cello"
     
-One important note about Haskell lists that make them very different from Python or Scheme is that they are **homogeneously typed**. That is, you can have a list of `Integer`s or of `Double`s or of `Char`s or even of lists of `Integer`s, but you cannot have a list with elements of different types. If you try this, GHCi will blow up in your face. 
+One important note about Haskell lists that make them very different from Python or Scheme is that they are **homogeneously typed**. That is, you can have a list of `Int`s or of `Double`s or of `Char`s or even of lists of `Int`s, but you cannot have a list with elements of different types. If you try this, GHCi will blow up in your face. 
 
     λ> ['h','a','X',0,'r','z']
 
@@ -78,7 +78,7 @@ One important note about Haskell lists that make them very different from Python
         
 This is a type error. You're going to see **a lot** of these. They're the reason it will take ten tries to get your code to compile, and they're the reason that once it does compile, it will work the first time. More on that later. 
 
-Haskell also has some neat syntax that allows you to tersely construct ranges of any enumerable type (for now, `Integer`s and `Char`s).
+Haskell also has some neat syntax that allows you to tersely construct ranges of any enumerable type (for now, `Int`s and `Char`s).
 
     λ> [1..5]
     [1,2,3,4,5]
@@ -121,7 +121,7 @@ Well. Okay. Let's try to make that a little more exciting. Go back to `sandbox.h
 
     bigness x = if x > 50 then "big" else "small"
     
-This is Haskell's equivalent of an `if` statement. If you're familiar with ternary expressions in any language, this is the same thing. If not, all that's different is that the entire thing is an expression, which means it must evaluate to something, which means the `else` always has to be there. It also means we can use it within other expressions like this:
+This is Haskell's equivalent of an `if` statement. If you're familiar with ternary expressions in any language, this is the same thing. If not, all that's different is that the entire thing is an expression, which means it must evaluate to something, so the `else` always has to be there. It also means we can use it within other expressions like this:
     
     myMood sky = (if sky == "blue" then 'r' else 's') : "ad"
     
@@ -146,3 +146,51 @@ Uh oh. Instead of `"smallbig"`, we got a type error. What's up with that?! Doesn
 
 The Type System
 ===============
+Haskell is **strongly typed**. This means, unlike Python, a value's type is rigid and can never change. Unlike Javascript, values of one type are not coerced into other types when a function is called on them. This may feel at first like a restriction, but it's actually extremely powerful. The type system is expressive enough that simply writing a type declaration for a function often serves as sufficient documentation. And like I said before, in almost all cases, if you make any mistake, the compiler will catch it and it will be a type error. That means if your code compiles, you probably didn't make any mistakes. 
+
+To check the type of something in GHCi, you can do one of two things. Either `set +t`, which will make GHCi print out the type of every value you compute, or do `:t value`, which will just print the type of `value`. I'm gonna stick with the latter. 
+    λ> :t False
+    False :: Bool
+    λ> :t 'z'
+    'z' :: Char
+    λ> :t "derp"
+    "derp" :: [Char]
+
+In the last line we see the syntax for a list of something, in this case `Char`s. 
+
+Let's see what types of functions look like. 
+
+    λ> :t myMood
+    myMood :: [Char] -> [Char]
+
+What GHCi is telling us is that `myMood` is a function that takes a list of characters and returns a list of characters (i.e. a `String`). Pretty straightforward. To add a type declaration to your function, you can type the line that GHCi just gave you into `sandbox.hs` right above the function definition. Note that types are automatically inferred, so of course this is not necessary. Like I said though, type declarations serve as documentation, so it's a good habit to include them as much as possible. Remember when I said `String` and `[Char]` were synonyms? That means you can instead type this:
+
+    myMood :: String -> String
+    myMood sky = (if sky == "blue" then 'r' else 's') : "ad"
+
+and GHC will know what you mean. Type synonyms serve as very terse but clear documentation, and we'll talk more about them later. 
+
+Can you give a type signature for `bigness`? One important note: the type `Int` is for 32-bit signed integers. `Integer` represents unbounded integers. Either works here. As an exercise, try adding a type declaration to `bigness` and checking if it compiles by loading `sandbox` in your GHCi session.
+
+There's something totally new that we have to talk about before we can look at functions of more than one argument. Functions in Haskell are curried by default. That means that a function of two arguments is actually a function that takes one argument and returns another function. Hence the type declarations for `sumSquares` should look like this (we'll assume we're working with small integers):
+
+    sumSquares :: Int -> Int -> Int
+
+Type that into `sandbox.hs` in the right place and add type declarations for the other functions in there.
+
+Laziness
+========
+infinite lists
+map fold reduce, list comprehensions
+
+
+
+User-Defined Types
+==================
+Vector example:
+    -list -- bad
+    -tuple -- nondescript
+    -type synonym -- insecure
+    -data -- beautiful
+
+
