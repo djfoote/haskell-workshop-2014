@@ -149,6 +149,7 @@ The Type System
 Haskell is **strongly typed**. This means, unlike Python, a value's type is rigid and can never change. Unlike Javascript, values of one type are not coerced into other types when a function is called on them. This may feel at first like a restriction, but it's actually extremely powerful. The type system is expressive enough that simply writing a type declaration for a function often serves as sufficient documentation. And like I said before, in almost all cases, if you make any mistake, the compiler will catch it and it will be a type error. That means if your code compiles, you probably didn't make any mistakes. 
 
 To check the type of something in GHCi, you can do one of two things. Either `set +t`, which will make GHCi print out the type of every value you compute, or do `:t value`, which will just print the type of `value`. I'm gonna stick with the latter. 
+    
     λ> :t False
     False :: Bool
     λ> :t 'z'
