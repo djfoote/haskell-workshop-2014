@@ -29,11 +29,14 @@ By default, the prompt depends on whatever packages you have loaded. `Prelude` i
 
 The interpreter works pretty much as you'd expect with arithmetic and whatnot. The most immediate thing you'll need to know to play around is the syntax for calling functions. In Haskell, a function call looks like an operator followed by its operands delimited by spaces. Some examples:
 
-    λ> max 1 2
-    2
-    λ> exp 1
-    2.718281828459045
-    
+```haskell
+λ> max 1 2
+2
+λ> exp 1
+2.718281828459045
+```
+
+
 Function application takes the highest precedence. 
 
     λ> max 1 2 + min 1 2
