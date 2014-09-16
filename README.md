@@ -208,24 +208,75 @@ What's going on here? The `:` operator is a function that takes in something of 
 
 Like `:`, `+` works on a type variable `a`. Unlike `:`, there is the constraint that `a` must be a numeric type. To learn more about this, read about typeclasses in one of the linked resources at the end. 
 
+The question at hand, now, is how Haskell works with user defined types. 
+
+User-Defined Types
+==================
+Let's consider a complex number example. In rectangular coordinates, a complex number is represented by a pair of the real part and the imaginary part. We haven't talked about tuples yet, but all that really needs to be said about them is that are very strictly typed. What I mean is that a tuple's type is uniquely defined by how many elements it has and what the types of those elements are. `(Int, Int)`, `(Int, Int, Int)`, and `(Int, Double)` are all distinct types. 
+
+So our complex numbers can be represented as an ordered pair of type `(Double, Double)`! Brilliant. Now what would we ever want to do with a complex number? Maybe we want to find its magnitude. Okay, so let's define a function in `sandbox.hs`. Note that since we restricted the `square` function before to type `Int -> Int` before, it won't work here. 
+
+```haskell
+magnitude :: (Double, Double) -> Double
+magnitude (re, im) = (re ** 2 + im ** 2) ** (0.5)
+```
+
+By the way, the syntax we're using here is a brilliant feature of Haskell, **pattern matching**. In the arguments to the function, we extract the real and imaginary parts by matching the input against the pattern `(re, im)` and making the corresponding bindings within the function. 
+
+Okay, this works. But that type declaration for the function is not very descriptive, and we still haven't defined a new type. However, we can define a type synonym for `(Double, Double)` like this:
+
+```haskell
+type Complex = (Double, Double)
+```
+
+and then we can rewrite the type declaration for `magnitude` like this:
+
+```haskell
+magnitude :: Complex -> Double
+```
+
+Much better! Although, again, we still haven't defined a new type, only a type _synonym_. It's clear from the type declaration that the function is intended to be used on complex numbers, but since a complex number is represented only by an ordered pair of `Double`s, it will still work on anything else that we choose to represent this way. This could give us problems down the road if we had some unrelated piece of data that we represent as a pair of `Double`s, because then we'd have a whole class of functions that work on a type they're not intended to be used with. So let's actually define a new type. Delete the type synonym declaration above and add this instead:
+
+```haskell
+data Complex = Complex Double Double deriving (Show, Eq)
+```
+
+What we've done is define a type `Complex` as well as a data constructor `Complex`. These can be different, as we'll see momentarily. A data constructor is simply a function that takes in some arguments--here they are two `Double`s--and returns a value of the type on the left of the `=` that contains those values. Don't worry about the `deriving` part; here we're just telling Haskell that our `Complex` type can be both printed and equated naively. 
+
+Now that we're no longer using a tuple, the pattern matching looks a little different. Change `magnitude` to look like this:
+
+```haskell
+magnitude (Complex re im) = (re ** 2 + im ** 2) ** (0.5)
+```
+
+A fairly straightforward change. Playing around with our new type may lend some intuition about how that's working. Load `sandbox.hs` into GHCi and try it out. By the way, you can define variables and functions in GHCi using the `let` keyword.
+
+```haskell
+λ> let x = Complex 2 3
+λ> x
+Complex 2.0 3.0
+λ> magnitude x
+3.605551275463989
+```
+
+As an exercise, try writing functions (along with their type declarations) that use pattern matching to extract the real and imaginary components of a complex number. 
+
+As you can imagine, we'll often want to create data types that are much more complicated than that. Let's look at a binary tree example. Open `BinTree.hs` from the skeleton folder.
+
+```haskell
+data BinTree a = Empty
+               | Node a (BinTree a) (BinTree a) deriving (Show)
+```
+
+There are several things going on here. The first thing we see is a type variable `a`. That means BinTree is actually a **type constructor**. The type of a binary tree is uniquely determined by the type of its contents, which we've restricted to being homogeneously typed. Examples of concrete types we could make from this are `BinTree Int` and `BinTree Complex` (but make sure you have both files loaded before you try to make one of those). 
+
+
 Laziness
 ========
 infinite lists
 map fold reduce, list comprehensions
+how currying can be useful
 
-
-
-User-Defined Types
-==================
-Vector example:
-    -list -- bad
-    -tuple -- nondescript
-    -type synonym -- insecure
-    -data -- beautiful
-
-Complex numbers
-Scheme syntax tree
-Binary tree
 
 Doing stuff
 ===========
