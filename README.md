@@ -296,9 +296,73 @@ data BinTree a = Empty
 
 There are several things going on here. The first thing we see is a type variable `a`. That means BinTree is actually a **type constructor**. The type of a binary tree is uniquely determined by the type of its contents, which we've restricted to being homogeneously typed. Examples of concrete types we could make from this are `BinTree Int` and `BinTree Complex` (but make sure you have both files loaded before you try to make one of those). 
 
-The next thing we see is that there are two things to the right of the `=`, separated by `|`. `BinTree` has two data constructors. Since `Empty` has no fields, it's actually just a single unique value representing the empty tree. `Node`, on the other hand, is recursively defined as having a left and right subtree. 
+The next thing we see is that there are two things to the right of the `=`, separated by `|`. `BinTree` has two data constructors. Since `Empty` has no fields, it's actually just a single unique value representing the empty tree. `Node`, on the other hand, is recursively defined as having a left and right subtree. `Node` has three fields. The first, which represents the item stored in that `Node`, has type `a`. The second and third, which are the subtrees, are both binary trees containing items of type `a`, so their type is `BinTree a`. 
 
+Let's define a `size` function so we can see that in action. We define "size" to mean the number of elements stored in the tree.
 
+```haskell
+size :: BinTree a -> Int
+size Empty = 0
+size (Node _ left right) = 1 + size left + size right
+```
+
+More pattern matching! The algorithm here should be pretty familiar. The size of an empty tree is 0. The size of a tree with a node is 1 greater than the sum of the sizes of the subtrees. Again, that `_` is there because we don't actually care what the element at that node is.
+
+The next example I want to show should also be familiar, though the type may throw you off.
+
+```haskell
+treeMap :: (a -> b) -> BinTree a -> BinTree b
+```
+
+Yikes! What is that? Let's think about `map` in terms of types. The `map` we're used to from 61A takes a unary function and a list, and returns a list of the results of applying that function to every element of that list. A sensible extension of that into a strongly-typed environment is that the list must be a lists of elements of type `a` and the function must take in a single value of type `a` and return a value of type `b` (could be the same type, could be different). The output, then, would be a list of values of type `b`. And that's what we have here. Look back at the type declaration and take a moment to digest why this makes sense. 
+
+Now let's implement the function.
+
+```haskell
+treeMap :: (a -> b) -> BinTree a -> BinTree b
+treeMap _ Empty = Empty
+treeMap f (Node x left right) = Node (f x) (treeMap f left) (treeMap f right)
+```
+
+Mapping any function over the empty tree is the empty tree. Mapping `f` over a `Node` whose element is `x` results in a `Node` whose element is `f x` and whose subtrees are the results of mapping `f` over the subtrees of the original `Node`. Let's play around with our data structure. Two example trees have been provided in the skeleton code. Look for them in `skeleton/BinTree.hs` if you haven't been using the skeleton code. Note the commented code at the bottom there about pretty-printed trees and do what it says if you want. It should still be pretty easy to follow along.
+
+```haskell
+λ> t1
+Node 3 (Node 6 Empty Empty) (Node 2 (Node 4 Empty Empty) Empty)
+λ> t2
+Node 7 (Node 2 (Node 1 Empty Empty) (Node 4 Empty Empty)) (Node 8 Empty Empty)
+λ> size t1
+4
+λ> let addTwo x = x + 2
+λ> treeMap addTwo t2
+Node 9 (Node 4 (Node 3 Empty Empty) (Node 6 Empty Empty)) (Node 10 Empty Empty)
+λ> treeMap even t1
+Node False (Node True Empty Empty) (Node True (Node True Empty Empty) Empty)
+```
+
+Remember when I promised I'd show you why automatic currying is useful? We can actually take any function and underfill its arguments to get another function. Here's why that's cool:
+
+```haskell
+λ> treeMap (max 5) t2
+Node 7 (Node 5 (Node 5 Empty Empty) (Node 5 Empty Empty)) (Node 8 Empty Empty)
+λ> treeMap (^3) t1
+Node 27 (Node 216 Empty Empty) (Node 8 (Node 64 Empty Empty) Empty)
+λ> treeMap (3^) t1
+Node 27 (Node 729 Empty Empty) (Node 9 (Node 81 Empty Empty) Empty)
+```
+
+`max 5` evaluates to a function that takes in some number and returns the max of 5 and that number. `^3` and `3^` are functions that cube a number and raise 3 to a number, respectively. You can do that with any binary operator. It's _really_ useful. 
+
+Before we move on I just want to point out that, knowing this, you can rewrite `square` from back in the `sandbox` like this:
+
+```haskell
+square :: Int -> Int
+square = (^2)
+```
+
+and that's just awesome. Like really awesome. This notion that you can manipulate and define functions without even referring to their arguments is what makes Haskell code able to express ideas succinctly.
+
+Last thing: try to write functions `height` and `flatten` in `BinTree.hs`. `height` finds the length of the longest path from the root to a leaf, and `flatten` returns a list of the elements of a tree in the order they would be visited by a preorder traversal. If you don't know what that means, the output from flattening `t2` should be sorted.
 
 Laziness
 ========

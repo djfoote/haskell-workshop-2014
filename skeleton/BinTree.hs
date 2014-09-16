@@ -23,7 +23,7 @@ t1 = Node 3
               (Node 4 Empty Empty) 
               Empty)
 
-t2 = bstFromList [7,2,4,8,1,9]
+t2 = bstFromList [7,2,4,8,1]
 
 --                   ======================================                   --
 --                   == THIS IS YOUR ABSTRACTION BARRIER ==                   --
