@@ -145,7 +145,7 @@ So let's play around with these a bit. Remember to `:l sandbox`.
         it = bigness (sumSquares 4 5) + bigness (squareSum 4 5)
 ```
 
-Uh oh. Instead of `"smallbig"`, we got a type error. What's up with that?! Doesn't `+` concatenate strings? **NO!** This is right around the point where we need to start talking more seriously about types (if you're anxious, the operator you're looking for is `++`).
+Uh oh. Instead of `"smallbig"`, we got a type error. What's up with that?! Doesn't `+` concatenate strings? **NO!** This is right around the point where we need to start talking more seriously about types (if you really want to know, the operator you're looking for is `++`).
 
 The Type System
 ===============
@@ -235,7 +235,7 @@ and then we can rewrite the type declaration for `magnitude` like this:
 magnitude :: Complex -> Double
 ```
 
-Much better! Although, again, we still haven't defined a new type, only a type _synonym_. It's clear from the type declaration that the function is intended to be used on complex numbers, but since a complex number is represented only by an ordered pair of `Double`s, it will still work on anything else that we choose to represent this way. This could give us problems down the road if we had some unrelated piece of data that we represent as a pair of `Double`s, because then we'd have a whole class of functions that work on a type they're not intended to be used with. So let's actually define a new type. Delete the type synonym declaration above and add this instead:
+Much better! Although, again, we still haven't defined a new type, only a type _synonym_. It's clear from the type declaration that the function is intended to be used on complex numbers, but since a complex number is represented only by an ordered pair of `Double`s, it will still work on anything else that we choose to represent this way. This could give us problems down the road if we had some unrelated piece of data that we represent as a pair of `Double`s, because then we'd have a set of functions that work on a type they're not intended to be used with. So let's actually define a new type. Delete the type synonym declaration above and add this instead:
 
 ```haskell
 data Complex = Complex Double Double deriving (Show, Eq)
@@ -259,9 +259,35 @@ Complex 2.0 3.0
 3.605551275463989
 ```
 
-As an exercise, try writing functions (along with their type declarations) that use pattern matching to extract the real and imaginary components of a complex number. 
+As an exercise, try writing functions (along with their type declarations) that use pattern matching to extract the real and imaginary components of a complex number. After that, try writing `addComplex` and `multComplex`.
 
-As you can imagine, we'll often want to create data types that are much more complicated than that. Let's look at a binary tree example. Open `BinTree.hs` from the skeleton folder.
+As you can imagine, we'll often want to create data types that are much more complicated than this. We're going to look at a binary tree example soon, but first I want to digress to talk a bit more about pattern matching. 
+
+Pattern Matching
+----------------
+You saw pattern matching against tuples and a user-defined type. Another pattern matching technique that can be really nifty is writing multiple definitions for a function. Consider the function `element`, which checks if something is an element of a list. Add this to your sandbox and don't worry about the type declaration for now. 
+
+```haskell
+element _ []   = False
+element x list = if x == head list then True 
+                 else element x (tail list)
+```
+
+We've written a definition for `element` for the base case and a separate one for the recursive case. Pretty neat! It makes the recursion much more visual. That `_` means that we don't care what's there, because nothing could be an element of the empty list.
+
+Since a list with at least one element takes on the form `y : ys` (remember `:` is Cons) where `y` is the first element of the list and `ys` is the rest, we can take this one step further:
+
+```haskell
+element _ []     = False
+element x (y:ys) = if x == y then True 
+                   else element x ys
+```
+
+Good stuff. Try implementing `listLength` and `butLast`, who both do exactly what they sound like, recursively using pattern matching. 
+
+Binary Tree
+-----------
+Open `BinTree.hs` from the skeleton folder.
 
 ```haskell
 data BinTree a = Empty
@@ -269,6 +295,9 @@ data BinTree a = Empty
 ```
 
 There are several things going on here. The first thing we see is a type variable `a`. That means BinTree is actually a **type constructor**. The type of a binary tree is uniquely determined by the type of its contents, which we've restricted to being homogeneously typed. Examples of concrete types we could make from this are `BinTree Int` and `BinTree Complex` (but make sure you have both files loaded before you try to make one of those). 
+
+The next thing we see is that there are two things to the right of the `=`, separated by `|`. `BinTree` has two data constructors. Since `Empty` has no fields, it's actually just a single unique value representing the empty tree. `Node`, on the other hand, is recursively defined as having a left and right subtree. 
+
 
 
 Laziness
