@@ -180,7 +180,7 @@ myMood sky = (if sky == "blue" then 'r' else 's') : "ad"
 
 and GHC will know what you mean. Type synonyms serve as very terse but clear documentation, and we'll talk more about them later. 
 
-Can you give a type signature for `bigness`? One important note: the type `Int` is for 32-bit signed integers. `Integer` represents unbounded integers. Either works here. As an exercise, try adding a type declaration to `bigness` and checking if it compiles by loading `sandbox` in your GHCi session.
+Can you give a type signature for `bigness`? One important note: the type `Int` is for 32- or 64-bit signed integers (depending on your architecture). `Integer` represents unbounded integers. Either works here. As an exercise, try adding a type declaration to `bigness` and checking if it compiles by loading `sandbox` in your GHCi session.
 
 There's something totally new that we have to talk about before we can look at functions of more than one argument. Functions in Haskell are curried by default. That means that a function of two arguments is actually a function that takes one argument and returns another function. Hence the type declarations for `sumSquares` should look like this (we'll assume we're working with small integers):
 
@@ -285,8 +285,8 @@ element x (y:ys) = if x == y then True
 
 Good stuff. Try implementing `listLength` and `butLast`, who both do exactly what they sound like, recursively using pattern matching. 
 
-Binary Tree
------------
+Binary Tree Example
+-------------------
 Open `BinTree.hs` from the skeleton folder.
 
 ```haskell
