@@ -53,18 +53,13 @@ In order to have expressions within operands to a function, you must use parenth
 1.0
 ```
 
-Now let's take a look at lists. Much like lists in Scheme, Haskell lists are linked lists that are constructed using the Cons operator, `:`, terminated by the empty list, `[]`. Luckily, they come with some syntactic sugar that makes them look like Python lists.
+Now let's take a look at lists. Much like lists in Scheme, Haskell lists are linked lists that are constructed using the Cons operator, `:`, terminated by the empty list, `[]`. Luckily, they come with some syntactic sugar that makes them look like Python lists. Also, strings (denoted by double quotes) are actually lists of characters (denoted by single quotes) with some additional syntactic sugar. Behold:
 
 ```haskell
 λ> 1:2:3:4:5:[]
 [1,2,3,4,5]
 λ> 5:[4,3,2,1]
 [5,4,3,2,1]
-```
-    
-Characters in Haskell are denoted with single quotes. Lists of characters get special treatment in Haskell. In fact, "String" is synonymous with "list of characters". What I mean by that is that the type `String` is actually just a list of characters with more syntactic sugar to be easier to work with. Strings use double quotes.
-
-```haskell
 λ> ['h','e','l','l','o']
 "hello"
 λ> 'c':"ello"
@@ -74,32 +69,18 @@ Characters in Haskell are denoted with single quotes. Lists of characters get sp
 One important note about Haskell lists that make them very different from Python or Scheme is that they are **homogeneously typed**. That is, you can have a list of `Int`s or of `Double`s or of `Char`s or even of lists of `Int`s, but you cannot have a list with elements of different types. If you try this, GHCi will blow up in your face. 
 
 ```haskell
-λ> ['h','a','X',0,'r','z']
+λ> ["this", "statement", "is", False]
 
-<interactive>:20:14:
-    No instance for (Num Char) arising from the literal `0'
-    Possible fix: add an instance declaration for (Num Char)
-    In the expression: 0
-    In the expression: ['h', 'a', 'X', 0, ....]
-    In an equation for `it': it = ['h', 'a', 'X', ....]
+<interactive>:2:29:
+    Couldn't match expected type `[Char]' with actual type `Bool'
+    In the expression: False
+    In the expression: ["this", "statement", "is", False]
+    In an equation for `it': it = ["this", "statement", "is", ....]
 ```
 
 This is a type error. You're going to see **a lot** of these. They're the reason it will take ten tries to get your code to compile, and they're the reason that once it does compile, it will work the first time. More on that later. 
 
-Haskell also has some neat syntax that allows you to tersely construct ranges of any enumerable type (for now, `Int`s and `Char`s).
-
-```haskell
-λ> [1..5]
-[1,2,3,4,5]
-λ> [2,4..10]
-[2,4,6,8,10]
-λ> [5,4..1]
-[5,4,3,2,1]
-λ> ['a'..'e']
-"abcde"
-```
-
-There are a couple more cool things you can do with ranges, but I'll hold off on that until we've talked about laziness. Now that we've got our basic syntax out of the way, let's talk about functions.
+Now that we've got our basic syntax out of the way, let's talk about functions.
 
 User-Defined Functions
 ======================
@@ -190,7 +171,7 @@ Let's see what types of functions look like.
 myMood :: [Char] -> [Char]
 ```
 
-What GHCi is telling us is that `myMood` is a function that takes a list of characters and returns a list of characters (i.e. a `String`). Pretty straightforward. To add a type declaration to your function, you can type the line that GHCi just gave you into `sandbox.hs` right above the function definition. Note that types are automatically inferred, so of course this is not necessary. Like I said though, type declarations serve as documentation, so it's a good habit to include them as much as possible. Remember when I said `String` and `[Char]` were synonyms? That means you can instead type this:
+What GHCi is telling us is that `myMood` is a function that takes a list of characters and returns a list of characters (i.e. a `String`). Pretty straightforward. To add a type declaration to your function, you can type the line that GHCi just gave you into `sandbox.hs` right above the function definition. Note that types are automatically inferred, so of course this is not necessary. Like I said though, type declarations serve as documentation, so it's a good habit to include them as much as possible. `String` and `[Char]` are synonyms, so you can instead type this:
 
 ```haskell
 myMood :: String -> String
@@ -207,7 +188,25 @@ There's something totally new that we have to talk about before we can look at f
 sumSquares :: Int -> Int -> Int
 ```
 
-Type that into `sandbox.hs` in the right place and add type declarations for the other functions in there.
+Type that into `sandbox.hs` in the right place and add type declarations for the other functions in there. We'll see some examples pretty soon of how this can be really useful. 
+
+We can treat operators as normal prefix functions by putting them in parentheses. This can be useful both to check the type of an operator in GHCi and to pass things like `*` and `+` into higher order functions.
+
+```haskell
+λ> :t (&&)
+(&) :: Bool -> Bool -> Bool
+λ> :t (:)
+(:) :: a -> [a] -> [a]
+```
+
+What's going on here? The `:` operator is a function that takes in something of some type and a list of that same type and outputs a new list of the same type. `a`, then, is a **type variable**. When you actually use `:` in an expression, Haskell will infer from the context what the type `a` should be. Then `[a]` will be a list of that type. This means that `:` is a **polymorphic function**: it works on more than one type. We can actually add constraints to type variables that allow us to make assumptions about what they can do, which allows us to do some really cool stuff and build really useful domain-specific abstractions. Unfortunately, we don't really have time to get too far into that today. As an example to make what I'm saying more concrete before I abandon the subject, consider the type of `+`:
+
+```haskell
+λ> :t (+)
+(+) :: Num a => a -> a -> a
+```
+
+Like `:`, `+` works on a type variable `a`. Unlike `:`, there is the constraint that `a` must be a numeric type. To learn more about this, read about typeclasses in one of the linked resources at the end. 
 
 Laziness
 ========
@@ -223,5 +222,13 @@ Vector example:
     -tuple -- nondescript
     -type synonym -- insecure
     -data -- beautiful
+
+Complex numbers
+Scheme syntax tree
+Binary tree
+
+Doing stuff
+===========
+IO
 
 
