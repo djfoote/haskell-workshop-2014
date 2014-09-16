@@ -1,21 +1,21 @@
 data BinTree a = Empty
                | Node a (BinTree a) (BinTree a) deriving (Show)
 
-size :: BinTree a -> Int
-size Empty = 0
-size (Node _ left right) = 1 + size left + size right
 
-treeMap :: (a -> b) -> BinTree a -> BinTree b
-treeMap _ Empty = Empty
-treeMap f (Node x left right) = Node (f x) (treeMap f left) (treeMap f right)
 
-height :: BinTree a -> Int
-height Empty = 0
-height (Node _ left right) = 1 + max (height left) (height right)
 
-flatten :: BinTree a -> [a]
-flatten Empty = []
-flatten (Node x left right) = flatten left ++ [x] ++ flatten right
+
+
+
+
+
+
+
+
+
+
+
+
 
 t1 = Node 3 
         (Node 6 Empty Empty) 
