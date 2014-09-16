@@ -22,18 +22,18 @@ type Word = String
 type WordMaster = (Word -> Either GameMessage Int)
 
 numCommonLetters :: Word -> Word -> Int
-numCommonLetters goal guess = length $ filter (`elem` guess) goal
+numCommonLetters goal guess = length (filter (`elem` guess) goal)
 
 makeWordMaster :: [Word] -> Word -> WordMaster
 makeWordMaster validGuesses goal guess
     | (length guess) /= (length goal) = Left BadNumLetters
     | guess == goal                   = Left CorrectWord
-    | not $ guess `elem` validGuesses = Left $ NotAWord guess
-    | otherwise                       = Right $ numCommonLetters goal guess
+    | not (guess `elem` validGuesses) = Left (NotAWord guess)
+    | otherwise                       = Right (numCommonLetters goal guess)
 
 startGame :: [Word] -> Word -> IO ()
 startGame validGuesses word = do
-    putStrLn $ "Playing with a " ++ (show $ length word) ++ " letter word."
+    putStrLn ("Playing with a " ++ (show (length word)) ++ " letter word.")
     let wordMaster = makeWordMaster validGuesses word
     takeTurn wordMaster word
 
@@ -41,10 +41,10 @@ takeTurn :: WordMaster -> Word -> IO ()
 takeTurn master word = do
     putStrLn prompt
     guess <- getLine
-    when (guess == "q") $ do
-        putStrLn $ "The word was " ++ word
-        exitSuccess
-    evaluateGuess guess $ master guess
+    when (guess == "q") (do
+        putStrLn ("The word was " ++ word)
+        exitSuccess)
+    evaluateGuess guess (master guess)
     takeTurn master word 
 
 evaluateGuess :: Word -> (Either GameMessage Int) -> IO ()
@@ -53,8 +53,8 @@ evaluateGuess _ (Left message) = do
     when (message == CorrectWord) 
         exitSuccess
 evaluateGuess guess (Right common) = do
-    putStrLn $ "The word " ++ guess ++ " has " ++ (show common) ++ 
-        " letters in common"
+    putStrLn ("The word " ++ guess ++ " has " ++ (show common) ++ 
+        " letters in common")
 
 --                   ======================================                   --
 --                   == THIS IS YOUR ABSTRACTION BARRIER ==                   --
