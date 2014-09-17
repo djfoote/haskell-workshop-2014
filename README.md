@@ -370,7 +370,6 @@ One thing I didn't tell you about lists is that there's special syntax to constr
 
 That's all fine and good. What's really neat is that Haskell has no problem with you defining an an infinite list like `[1..]`. How does this work? Haskell is **lazily evaluated**. As it relates to the question at hand, that means **all lists are streams**. You want to find the first integer that's bigger than 1,000,000 when raised to itself? No problem:
 
-<<<<<<< HEAD
 ```haskell
 λ> let pred n = n^n > 1000000
 λ> head (filter pred [1..])
