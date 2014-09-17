@@ -397,7 +397,7 @@ That would take too long to try to do in this workshop though. Instead, for a co
 
 It's also really fast. Try typing in `fibs !! 100000` (that's asking for the hundred thousandth element of `fibs`). It's pretty cool.
 
-Doing Stuff
+Doing Stuff (I/O)
 =======
 Unlike most of haskell, I/O works as a series of commands. If you take a look at io.hs, you see the structure of an I/O block is as follows:
 
