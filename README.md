@@ -324,7 +324,7 @@ treeMap _ Empty = Empty
 treeMap f (Node x left right) = Node (f x) (treeMap f left) (treeMap f right)
 ```
 
-Mapping any function over the empty tree is the empty tree. Mapping `f` over a `Node` whose element is `x` results in a `Node` whose element is `f x` and whose subtrees are the results of mapping `f` over the subtrees of the original `Node`. Let's play around with our data structure. Two example trees have been provided in the skeleton code. Look for them in `skeleton/BinTree.hs` if you haven't been using the skeleton code. Note the commented code at the bottom there about pretty-printed trees and do what it says if you want. It should still be pretty easy to follow along.
+Mapping any function over the empty tree is the empty tree. Mapping `f` over a `Node` whose element is `x` results in a `Node` whose element is `f x` and whose subtrees are the results of mapping `f` over the subtrees of the original `Node`. Let's play around with our data structure. Two example trees have been provided in the skeleton code. Look for them in `skeleton/BinTree.hs` if you haven't been using the skeleton code. Note the comment at the bottom there about pretty-printed trees and do what it says if you want to. It should still be pretty easy to follow along.
 
 ```haskell
 λ> t1
@@ -360,18 +360,44 @@ square :: Int -> Int
 square = (^2)
 ```
 
-and that's just awesome. Like really awesome. This notion that you can manipulate and define functions without even referring to their arguments is what makes Haskell code able to express ideas succinctly.
+and that's just awesome. Like really awesome. This notion that you can manipulate and define functions without even referring to their arguments is what makes Haskell code able to express ideas so succinctly. I'm probably going to get stuck preaching here during the live workshop, so if you're reading right now, I'm sorry you're missing that. For better or for worse.
 
 Last thing: try to write functions `height` and `flatten` in `BinTree.hs`. `height` finds the length of the longest path from the root to a leaf, and `flatten` returns a list of the elements of a tree in the order they would be visited by a preorder traversal. If you don't know what that means, the output from flattening `t2` should be sorted.
 
 Laziness
 ========
-infinite lists
-map fold reduce, list comprehensions
-how currying can be useful
+One thing I didn't tell you about lists is that there's special syntax to construct ranges out of enumerable types. `[1..10]` and `['a'..'z']` work as you'd expect. `[2,4..20]` makes an arithmetic sequence.
 
+That's all fine and good. What's really neat is that Haskell has no problem with you defining an an infinite list like `[1..]`. How does this work? Haskell is **lazily evaluated**. As it relates to the question at hand, that means **all lists are streams**. You want to find the first integer that's bigger than 1,000,000 when raised to itself? No problem:
 
-Doing stuff
+```haskell
+λ> let pred n = n^n > 1000000
+λ> head (filter pred [1..])
+8
+```
+
+Wham! Pretty good. But it doesn't just stop with lists. **Everything** is lazily evaluated. That means **all functions are short-circuiting**. You know how `and` and `or` are special forms in most languages? Not Haskell. If a function knows what it evaluates to by only looking at its first argument, it will look no further. This applies to data structures as well. We could easily create a type to refer to power series, do all sorts of arithmetic with them, and at any time we could request an approximation of the result to arbitrary precision. 
+
+That would take too long to try to do in this workshop though. Instead, for a cool example, I'm gonna show you something you've already seen: a recursive fibonacci number stream.
+
+```haskell
+λ> let fibs = 0:1:zipWith (+) fibs (tail fibs)
+```
+
+`zipWith (+)` is essentially taking two lists, lining them up, and summing them element-wise. Working in terms of infinite lists is very natural in Haskell. Once we have this, we can do whatever we want with it.
+
+```haskell
+λ> take 10 fibs
+[0,1,1,2,3,5,8,13,21,34]
+λ> take 10 (filter odd fibs)
+[1,1,3,5,13,21,55,89,233,377]
+λ> zip ['a'..'g'] fibs
+[('a',0),('b',1),('c',1),('d',2),('e',3),('f',5),('g',8)]
+```
+
+It's also really fast. Try typing in `fibs !! 100000` (that's asking for the hundred thousandth element of `fibs`). It's pretty cool.
+
+Doing Stuff
 ===========
 IO
 
