@@ -2,59 +2,48 @@ import System.IO
 import System.Exit(exitSuccess)
 import System.Random
 import Control.Monad(when)
-import Data.Set(size, fromList)
-
-letters = ['a'..'z']
-
-data GameMessage = BadNumLetters
-                 | CorrectWord
-                 | NotAWord Word 
-                 deriving (Eq)
-
-display :: GameMessage -> String
-display BadNumLetters = "Wrong number of letters"
-display (NotAWord w)  = w ++ " is not a valid word."
-display CorrectWord   = "Congratulations! You win!"
-
-prompt = "Enter a word to get its score or q to quit."
+import Data.List(nub)
 
 type Word = String
-type WordMaster = (Word -> Either GameMessage Int)
 
-numCommonLetters :: Word -> Word -> Int
-numCommonLetters goal guess = length (filter (`elem` guess) goal)
+data GameState   = Game [Word] Word
+data Result      = Failure Error
+                 | Victory
+                 | Score Word Int
 
-makeWordMaster :: [Word] -> Word -> WordMaster
-makeWordMaster validGuesses goal guess
-    | (length guess) /= (length goal) = Left BadNumLetters
-    | guess == goal                   = Left CorrectWord
-    | not (guess `elem` validGuesses) = Left (NotAWord guess)
-    | otherwise                       = Right (numCommonLetters goal guess)
+data Error = BadNumLetters
+           | NotAWord Word 
 
-startGame :: [Word] -> Word -> IO ()
-startGame validGuesses word = do
-    putStrLn ("Playing with a " ++ (show (length word)) ++ " letter word.")
-    let wordMaster = makeWordMaster validGuesses word
-    takeTurn wordMaster word
+commonLetters :: Word -> Word -> Int
+commonLetters goal guess = length (filter (`elem` guess) goal)
 
-takeTurn :: WordMaster -> Word -> IO ()
-takeTurn master word = do
-    putStrLn prompt
+checkWord :: GameState -> Word -> Result
+checkWord (Game valid goal) guess
+    | (length guess) /= (length goal) = Failure BadNumLetters
+    | not (guess `elem` valid)        = Failure (NotAWord guess)
+    | guess == goal                   = Victory
+    | otherwise                       = Score guess (commonLetters goal guess)
+
+feedback :: Result -> String
+feedback Victory                   = "Congratulations! You win!"
+feedback (Failure (BadNumLetters)) = "Wrong number of letters."
+feedback (Failure (NotAWord w))    = w ++ " is not a valid word."
+feedback (Score guess common)      = 
+    guess ++ " has " ++ (show common) ++ " letters in common."
+
+takeTurn :: GameState -> IO ()
+takeTurn state@(Game _ goal) = do
+    putStrLn turnPrompt
     guess <- getLine
     when (guess == "q") (do
-        putStrLn ("The word was " ++ word)
+        putStrLn ("The word was " ++ goal)
         exitSuccess)
-    evaluateGuess guess (master guess)
-    takeTurn master word 
+    let result = checkWord state guess
+    putStrLn (feedback result)
+    case result of Victory -> exitSuccess
+                   _       -> takeTurn state
 
-evaluateGuess :: Word -> (Either GameMessage Int) -> IO ()
-evaluateGuess _ (Left message) = do
-    putStrLn (display message)
-    when (message == CorrectWord) 
-        exitSuccess
-evaluateGuess guess (Right common) = do
-    putStrLn ("The word " ++ guess ++ " has " ++ (show common) ++ 
-        " letters in common")
+turnPrompt = "Enter a word to get its score or q to quit."
 
 --                   ======================================                   --
 --                   == THIS IS YOUR ABSTRACTION BARRIER ==                   --
@@ -62,6 +51,14 @@ evaluateGuess guess (Right common) = do
 
 -- I may or may not get around to writing explanations for what's going on here.
 -- If you read the chapter on IO in LYAH, this should all make sense.
+
+startPrompt word = "Playing with a " ++ (show (length word)) ++ " letter word."
+
+
+startGame :: [Word] -> Word -> IO ()
+startGame validGuesses word = do
+    putStrLn (startPrompt word)
+    takeTurn (Game validGuesses word)
 
 getValidGuesses :: IO [Word]
 getValidGuesses = do 
@@ -76,7 +73,7 @@ chooseRandomWord validWords gen =
 -- A valid master word has no duplicate letters.
 filterValidMasterWords :: [Word] -> [Word]
 filterValidMasterWords guesses =
-    let uniqueChars = size . fromList
+    let uniqueChars = length . nub
         noDuplicates guess = uniqueChars guess == length guess
     in  filter noDuplicates guesses
 
