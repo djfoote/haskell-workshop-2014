@@ -1,4 +1,4 @@
-haskell-workshop-2014
+Haskell Workshop 2014
 =====================
 
 Code and walkthrough for the Fall 2014 Hackers @ Berkeley Haskell workshop
@@ -370,6 +370,7 @@ One thing I didn't tell you about lists is that there's special syntax to constr
 
 That's all fine and good. What's really neat is that Haskell has no problem with you defining an an infinite list like `[1..]`. How does this work? Haskell is **lazily evaluated**. As it relates to the question at hand, that means **all lists are streams**. You want to find the first integer that's bigger than 1,000,000 when raised to itself? No problem:
 
+<<<<<<< HEAD
 ```haskell
 λ> let pred n = n^n > 1000000
 λ> head (filter pred [1..])
@@ -398,7 +399,36 @@ That would take too long to try to do in this workshop though. Instead, for a co
 It's also really fast. Try typing in `fibs !! 100000` (that's asking for the hundred thousandth element of `fibs`). It's pretty cool.
 
 Doing Stuff
-===========
-IO
+=======
+Unlike most of haskell, I/O works as a series of commands. If you take a look at io.hs, you see the structure of an I/O block is as follows:
 
+```haskell
+f :: IO a   
+f = do
+    x <- action1
+    action2 x
+    y <- action3
+    action4 x y
+```
 
+By the type signature, we see that `f` is of type `IO`. However, where as most functions in Haskell are purely functional, an `IO` block uses a `do` statement.
+
+If we look at the example in io.hs:
+
+```haskell
+toList :: String -> [Integer]
+toList input = read ("[" ++ input ++ "]")
+
+main = do
+    putStrLn "Enter a list of numbers (separated by comma):"
+    input <- getLine
+    print $ sum (toList input)
+```
+
+The body of main is a `do` statement, which issues the following commands.
+
+1. First, print to screen "Enter a list of numbers (separated by comma):"
+2. Then, use the IO built-in function `getLine` to bind the result of getLine to a variable `input`.
+3. Finally, use the user defined function `toList` to create a list from the variable `input`, and print the sum of the list to screen.
+
+Most I/O blocks in Haskell are a lot more complicated than the above example. For more information, and a more comprehensive look at the IO Monad, take a look at [Haskell Fast and Hard](http://yannesposito.com/Scratch/en/blog/Haskell-the-Hard-Way/), or [Learn You a Haskell for the Greater Good.](http://learnyouahaskell.com/chapters)
