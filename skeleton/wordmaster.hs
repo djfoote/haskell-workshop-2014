@@ -4,46 +4,6 @@ import System.Random
 import Control.Monad(when)
 import Data.List(nub)
 
-type Word = String
-
-data GameState = Game [Word] Word
-
-data Result    = Failure Error
-               | Victory
-               | Score Word Int
-
-data Error     = BadNumLetters
-               | NotAWord Word 
-
-commonLetters :: Word -> Word -> Int
-commonLetters goal guess = length (filter (`elem` guess) goal)
-
-checkWord :: GameState -> Word -> Result
-checkWord (Game valid goal) guess
-    | (length guess) /= (length goal) = Failure BadNumLetters
-    | not (guess `elem` valid)        = Failure (NotAWord guess)
-    | guess == goal                   = Victory
-    | otherwise                       = Score guess (commonLetters goal guess)
-
-feedback :: Result -> String
-feedback Victory                   = "Congratulations! You win!"
-feedback (Failure BadNumLetters)   = "Wrong number of letters."
-feedback (Failure (NotAWord w))    = w ++ " is not a valid word."
-feedback (Score guess common)      = 
-    guess ++ " has " ++ show common ++ " letters in common."
-
-takeTurn :: GameState -> IO ()
-takeTurn state@(Game _ goal) = do
-    putStrLn turnPrompt
-    guess <- getLine
-    when (guess == "q") (do
-        putStrLn ("The word was " ++ goal)
-        exitSuccess)
-    let result = checkWord state guess
-    putStrLn (feedback result)
-    case result of Victory -> exitSuccess
-                   _       -> takeTurn state
-
 turnPrompt = "Enter a word to get its score or q to quit."
 
 --                   ======================================                   --
