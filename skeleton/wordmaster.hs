@@ -1,8 +1,45 @@
 import System.IO
-import System.Exit(exitSuccess)
 import System.Random
-import Control.Monad(when)
 import Data.List(nub)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 turnPrompt = "Enter a word to get its score or q to quit."
 

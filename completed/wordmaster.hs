@@ -1,7 +1,5 @@
 import System.IO
-import System.Exit(exitSuccess)
 import System.Random
-import Control.Monad(when)
 import Data.List(nub)
 
 type Word = String
@@ -36,13 +34,12 @@ takeTurn :: GameState -> IO ()
 takeTurn state@(Game _ goal) = do
     putStrLn turnPrompt
     guess <- getLine
-    when (guess == "q") (do
-        putStrLn ("The word was " ++ goal)
-        exitSuccess)
-    let result = checkWord state guess
-    putStrLn (feedback result)
-    case result of Victory -> exitSuccess
-                   _       -> takeTurn state
+    if guess == "q" then putStrLn ("The word was " ++ goal)
+    else do
+        let result = checkWord state guess
+        putStrLn (feedback result)
+        case result of Victory -> return ()
+                       _       -> takeTurn state
 
 turnPrompt = "Enter a word to get its score or q to quit."
 
