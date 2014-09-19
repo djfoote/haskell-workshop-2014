@@ -29,7 +29,7 @@ t2 = bstFromList [7,2,4,8,1]
 --                   == THIS IS YOUR ABSTRACTION BARRIER ==                   --
 --                   ======================================                   --
 
--- You can only make a BST out of orderable types. 
+-- You can only make a BST out of orderable types. Here we nub duplicates.
 bstFromList :: (Ord a) => [a] -> BinTree a
 bstFromList [] = Empty
 bstFromList (x:xs) = Node x (bstFromList (filter (<x) xs))
