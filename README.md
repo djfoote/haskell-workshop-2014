@@ -430,4 +430,4 @@ The body of main is a `do` statement, which issues the following commands.
 2. Then, use the IO built-in function `getLine` to bind the result of getLine to a variable `input`.
 3. Finally, use the user defined function `toList` to create a list from the variable `input`, and print the sum of the list to screen.
 
-Most I/O blocks in Haskell are a lot more complicated than the above example. For more information, and a more comprehensive look at the IO Monad, take a look at [Haskell Fast and Hard](http://yannesposito.com/Scratch/en/blog/Haskell-the-Hard-Way/), or [Learn You a Haskell for the Greater Good.](http://learnyouahaskell.com/chapters)
+Most I/O blocks in Haskell are a lot more complicated than the above example. For more information, and a more comprehensive look at the IO Monad, take a look at [Haskell Fast and Hard](http://yannesposito.com/Scratch/en/blog/Haskell-the-Hard-Way/), or [Learn You a Haskell for Great Good!](http://learnyouahaskell.com/chapters)
